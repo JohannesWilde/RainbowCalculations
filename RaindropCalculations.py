@@ -81,3 +81,21 @@ class RaindropCalculations(object):
     def pointDelta(self):
         '''Emergence.'''
         return otherIntersectionOf(pointFrom=self.pointGamma, direction=self.direction2)
+
+    @property
+    def delta0(self):
+        # the following two statements are identical regarding their output
+        # return Angle(radians=asin(self.n1/self.n0*sin(self.delta1.radians)))
+        return self.beta0
+
+    @property
+    def delta1(self):
+        return self.beta1
+
+    @property
+    def direction3(self):
+        return Rotate2D(angle=(self.delta0 - self.delta1)) * self.direction2
+
+    @property
+    def eta0(self):
+        return angleFromPointOnUnitCircle(self.direction3)
