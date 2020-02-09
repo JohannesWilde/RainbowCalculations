@@ -46,10 +46,13 @@ if __name__ == '__main__':
     axis.add_artist(raindrop)
 
     # show light ray - incident
-    pointBeta = raindropCalculations.getIncidencePoint()
+    pointBeta = raindropCalculations.pointBeta
     plt.scatter(pointBeta.x, pointBeta.y, marker='.', zorder=ObjectZorder.MeetingPoints, color=ObjectColor.MeetingPoints)
-
     plt.plot((2, pointBeta.x), (pointBeta.y, pointBeta.y), color=ObjectColor.Lightray)
+
+    pointGamma = raindropCalculations.pointGamma
+    plt.scatter(pointGamma.x, pointGamma.y, marker='.', zorder=ObjectZorder.MeetingPoints, color=ObjectColor.MeetingPoints)
+    plt.plot((pointBeta.x, pointGamma.x), (pointBeta.y, pointGamma.y), color=ObjectColor.Lightray)
 
     # make plot visible
     plt.show()
