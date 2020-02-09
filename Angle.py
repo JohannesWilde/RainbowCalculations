@@ -78,3 +78,9 @@ class Angle(object):
     def turns(self, value):
         self.radians = self.turnsToRadians(value=value)
         return
+
+    def __str__(self):
+        return '{degrees}°'.format(degrees=self.degrees)
+
+    def __repr__(self):
+        return '{value} - Angle at {address}'.format(str(self), address = hex(id(self)))
