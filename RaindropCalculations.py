@@ -73,12 +73,11 @@ class RaindropCalculations(object):
 
     @property
     def direction2(self):
-        return Rotate2D(angle=(Angle(degrees=180.) - 2 * self.gamma1)) * self.direction1
+        return Rotate2D(angle=(Angle(degrees=180.) - (self.gamma1 * 2))) * self.direction1
 
 
     # delta
     @property
     def pointDelta(self):
         '''Emergence.'''
-
-        return
+        return otherIntersectionOf(pointFrom=self.pointGamma, direction=self.direction2)

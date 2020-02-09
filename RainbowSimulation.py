@@ -54,9 +54,12 @@ if __name__ == '__main__':
     plt.scatter(pointGamma.x, pointGamma.y, marker='.', zorder=ObjectZorder.MeetingPoints, color=ObjectColor.MeetingPoints)
     plt.plot((pointBeta.x, pointGamma.x), (pointBeta.y, pointGamma.y), color=ObjectColor.Lightray)
 
-    # make plot visible
-    # plt.show()
+    pointDelta = raindropCalculations.pointDelta
+    plt.scatter(pointDelta.x, pointDelta.y, marker='.', zorder=ObjectZorder.MeetingPoints, color=ObjectColor.MeetingPoints)
+    plt.plot((pointGamma.x, pointDelta.x), (pointGamma.y, pointDelta.y), color=ObjectColor.Lightray)
 
-    print( raindropCalculations.gamma1 )
+    # make plot visible
+    plt.show()
+
 
     exit(0)
