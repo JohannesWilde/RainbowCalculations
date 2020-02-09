@@ -57,4 +57,7 @@ if __name__ == '__main__':
     # make plot visible
     plt.show()
 
+    gamma = raindropCalculations.gamma
+    print(gamma)
+
     exit(0)

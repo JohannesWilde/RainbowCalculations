@@ -3,7 +3,7 @@
 from math import sin, cos, tan, asin, atan
 from Angle import Angle
 from Rotation import Rotate2D
-from UnitCircleHelpers import otherIntersectionOf, unitCirclePointFromAngle
+from UnitCircleHelpers import angleFromPointOnUnitCircle, otherIntersectionOf, unitCirclePointFromAngle
 from Vector import Vector2D
 
 class RaindropCalculations(object):
@@ -62,6 +62,11 @@ class RaindropCalculations(object):
     def pointGamma(self):
         '''Reflection.'''
         return otherIntersectionOf(pointFrom=self.pointBeta, direction=self.direction1)
+
+    @property
+    def gamma(self):
+        return angleFromPointOnUnitCircle(self.pointGamma)
+
 
     # delta
     @property
