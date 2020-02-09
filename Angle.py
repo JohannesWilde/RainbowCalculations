@@ -4,13 +4,16 @@
 
 from math import pi
 
-class Angle(object):
+from TypeHelpers import NumberTypes, TypeChecker
+
+class Angle(TypeChecker):
 
     FullCircleTurns = 1.
     FullCircleRadians = 2 * pi
     FullCircleDegrees = 360.
 
     def __init__(self, degrees=None, radians=None, turns=None):
+        TypeChecker.__init__(self)
         arguments = (degrees, radians, turns)
         numberOfNonNoneArguments = len(arguments) - arguments.count(None)
         if numberOfNonNoneArguments != 1:
@@ -83,4 +86,23 @@ class Angle(object):
         return '{degrees}°'.format(degrees=self.degrees)
 
     def __repr__(self):
-        return '{value} - Angle at {address}'.format(str(self), address = hex(id(self)))
+        return '{value} - Angle at {address}'.format(value=str(self), address = hex(id(self)))
+
+    def __add__(self, other):
+        self.checkType(expectedType=Angle, value=other, exceptionMessage='Only Angles can be added to Angles.')
+        return Angle(radians=(self.radians + other.radians))
+
+    def __sub__(self, other):
+        self.checkType(expectedType=Angle, value=other, exceptionMessage='Only Angles can be subtracted from Angles.')
+        return (self + (-other))
+
+    def __neg__(self):
+        return Angle(radians=-self.radians)
+
+    def __mul__(self, other):
+        self.checkType(expectedType=NumberTypes, value=other, exceptionMessage='Angles can only be multiplied by numbers.')
+        return Angle(radians=(self.radians * other))
+
+    def __truediv__(self, other):
+        self.checkType(expectedType=NumberTypes, value=other, exceptionMessage='Angles can only be multiplied by numbers.')
+        return self * (1. / other)
