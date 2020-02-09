@@ -2,11 +2,13 @@
 
 '''Class for storing a 2D point.'''
 
+from TypeHelpers import TypeChecker
 from Vector import Vector2D
 
-class Point2D(object):
+class Point2D(TypeChecker):
 
     def __init__(self, x, y):
+        TypeChecker.__init__(self)
         self.x = x
         self.y = y
         return
@@ -15,21 +17,15 @@ class Point2D(object):
         return '({x}, {y})'.format(x=self.x, y = self.y)
 
     def __repr__(self):
-        return '{value} - Point2D at {address}'.format(str(self), address = hex(id(self)))
+        return '{value} - Point2D at {address}'.format(value=str(self), address = hex(id(self)))
 
     def __add__(self, other):
-        if isinstance(other, Vector2D):
-            addition = Point2D(x=(self.x + other.x), y=(self.y + other.y))
-        else:
-            raise TypeError('Incompatible type supplied - only Vectors can be added to points [type].'.format(type=type(other)))
-        return addition
+        self.checkType(expectedType=Vector2D, value=other, exceptionMessage='Only Vectors can be added to points.')
+        return Point2D(x=(self.x + other.x), y=(self.y + other.y))
 
     def __sub__(self, other):
-        if isinstance(other, Vector2D):
-            addition = Point2D(x=(self.x + other.x), y=(self.y + other.y))
-        else:
-            raise TypeError('Incompatible type supplied - only Vectors can be added to points [type].'.format(type=type(other)))
-        return addition
+        self.checkType(expectedType=Vector2D, value=other, exceptionMessage='Only Vectors can be added to points.')
+        return self + -other
 
     def __neg__(self):
         return Point2D(x=(-self.x), y=(-self.y))
