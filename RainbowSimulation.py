@@ -5,10 +5,8 @@
     1 internal reflection only.'''
 
 from matplotlib import pyplot as plt
-from math import sin, cos, tan, asin, atan
+from RaindropCalculations import RaindropCalculations
 
-from Angle import Angle
-from UnitCircleHelpers import unitCirclePointFromAngle
 
 class ObjectZorder(object):
     # bigger values are to the front
@@ -25,8 +23,11 @@ if __name__ == '__main__':
     refractiveIndexOuter = 1.
     refractiveIndexInner = 1.5
 
-    alpha0 = Angle(degrees=40)
+    height0 = .4  # normalized height [0,1]
 
+    raindropCalculations = RaindropCalculations(refractiveIndexInner=refractiveIndexInner,
+                                                refractiveIndexOuter=refractiveIndexOuter,
+                                                incidenceHeight=height0)
 
     # get plot
     axis = plt.gca()
@@ -45,7 +46,7 @@ if __name__ == '__main__':
     axis.add_artist(raindrop)
 
     # show light ray - incident
-    pointBeta = unitCirclePointFromAngle(alpha0)
+    pointBeta = raindropCalculations.getIncidencePoint()
     plt.scatter(pointBeta.x, pointBeta.y, marker='.', zorder=ObjectZorder.MeetingPoints, color=ObjectColor.MeetingPoints)
 
     plt.plot((2, pointBeta.x), (pointBeta.y, pointBeta.y), color=ObjectColor.Lightray)
