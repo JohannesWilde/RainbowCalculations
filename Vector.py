@@ -2,6 +2,7 @@
 
 '''Class for storing a 2D vector.'''
 
+from math import sqrt
 from TypeHelpers import NumberTypes, TypeChecker
 
 class Vector2D(TypeChecker):
@@ -35,3 +36,6 @@ class Vector2D(TypeChecker):
 
     def __neg__(self):
         return (self * (-1))
+
+    def __abs__(self):
+        return sqrt(abs(self.x)**2 + abs(self.y)**2)
