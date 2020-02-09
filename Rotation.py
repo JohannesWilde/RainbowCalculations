@@ -24,8 +24,8 @@ class Rotate2D(TypeChecker):
 
     def __mul__(self, other):
         self.checkType(Vector2D, other, 'Rotate2D can only multiply Vector2Ds.')
-        cosAngle = cos(self.angle)
-        sinAngle = sin(self.angle)
+        cosAngle = cos(self.angle.radians)
+        sinAngle = sin(self.angle.radians)
         return Vector2D(x=(cosAngle * other.x - sinAngle * other.y),
                         y=(sinAngle * other.x + cosAngle * other.y))
 
