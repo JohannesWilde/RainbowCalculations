@@ -67,6 +67,14 @@ class RaindropCalculations(object):
     def gamma(self):
         return angleFromPointOnUnitCircle(self.pointGamma)
 
+    @property
+    def gamma1(self):
+        return Angle(degrees=180.) - self.beta1 + self.alpha0 - self.gamma
+
+    @property
+    def direction2(self):
+        return Rotate2D(angle=(Angle(degrees=180.) - 2 * self.gamma1)) * self.direction1
+
 
     # delta
     @property

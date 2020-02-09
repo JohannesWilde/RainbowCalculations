@@ -55,9 +55,8 @@ if __name__ == '__main__':
     plt.plot((pointBeta.x, pointGamma.x), (pointBeta.y, pointGamma.y), color=ObjectColor.Lightray)
 
     # make plot visible
-    plt.show()
+    # plt.show()
 
-    gamma = raindropCalculations.gamma
-    print(gamma)
+    print( raindropCalculations.gamma1 )
 
     exit(0)
