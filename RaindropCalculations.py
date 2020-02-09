@@ -2,7 +2,9 @@
 
 from math import sin, cos, tan, asin, atan
 from Angle import Angle
+from Rotation import Rotate2D
 from UnitCircleHelpers import unitCirclePointFromAngle
+from Vector import Vector2D
 
 class RaindropCalculations(object):
 
@@ -28,6 +30,10 @@ class RaindropCalculations(object):
     def alpha0(self):
         return Angle(radians=asin(self.h0))
 
+    @property
+    def direction0(self):
+        return Vector2D(x=-1, y=0)
+
     # beta
     @property
     def pointBeta(self):
@@ -46,12 +52,16 @@ class RaindropCalculations(object):
     def epsilon0(self):
         return (self.beta0 - self.beta1)
 
+    @property
+    def direction1(self):
+        return Rotate2D(angle=self.epsilon0) * self.direction0
+
 
     # gamma
     @property
     def pointGamma(self):
         '''Reflection.'''
-
+        
         return
 
     # delta
