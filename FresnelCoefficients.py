@@ -24,6 +24,14 @@ class FresnelCoefficients(object):
             threshold = float('inf')
         return Angle(radians=threshold)
 
+    def getTransmissionAngle(self, incidenceAngle):
+        sinBeta = self.mediumFrom.refractiveIndex / self.mediumTo.refractiveIndex * sin(incidenceAngle.radians)
+        if abs(sinBeta) <= 1:
+            beta = asin(sinBeta)
+        else:
+            beta = float('nan')
+        return Angle(radians=beta)
+
 
     def amplitudeToPowerTransmittance(self, incidenceAngle, transmittance):
         if incidenceAngle > self._getTotalInternalReflexionThresholdAngle():
