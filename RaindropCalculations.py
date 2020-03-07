@@ -2,6 +2,7 @@
 
 from math import sin, cos, tan, asin, atan
 from Angle import Angle
+from FresnelCoefficients import FresnelCoefficients, Medium
 from Rotation import Rotate2D
 from UnitCircleHelpers import angleFromPointOnUnitCircle, otherIntersectionOf, unitCirclePointFromAngle
 from Vector import Vector2D
@@ -12,6 +13,10 @@ class RaindropCalculations(object):
         self.refractiveIndexOuter = refractiveIndexOuter
         self.refractiveIndexInner = refractiveIndexInner
         self.incidenceHeight = incidenceHeight
+        self.mediumInner = Medium(refractiveIndex=self.refractiveIndexInner, magneticPermeability=1.)
+        self.mediumOuter = Medium(refractiveIndex=self.refractiveIndexOuter, magneticPermeability=1.)
+        self.fresnelIn = FresnelCoefficients(mediumFrom=self.mediumOuter, mediumTo=self.mediumInner)
+        self.fresnelOut = FresnelCoefficients(mediumFrom=self.mediumInner, mediumTo=self.mediumOuter)
         return
 
     @property
@@ -46,7 +51,7 @@ class RaindropCalculations(object):
 
     @property
     def beta1(self):
-        return Angle(radians=asin(self.n0/self.n1*self.h0))
+        return self.fresnelIn.getTransmissionAngle(incidenceAngle=self.beta0)
 
     @property
     def epsilon0(self):
@@ -61,15 +66,15 @@ class RaindropCalculations(object):
     @property
     def pointGamma(self):
         '''Reflection.'''
-        return otherIntersectionOf(pointFrom=self.pointBeta, direction=self.direction1)
+        return unitCirclePointFromAngle(angle=self.gamma)
 
     @property
     def gamma(self):
-        return angleFromPointOnUnitCircle(self.pointGamma)
+        return Angle(degrees=180) + self.beta0 - self.beta1 * 2
 
     @property
     def gamma1(self):
-        return Angle(degrees=180.) - self.beta1 + self.alpha0 - self.gamma
+        return self.beta1
 
     @property
     def direction2(self):
@@ -80,7 +85,11 @@ class RaindropCalculations(object):
     @property
     def pointDelta(self):
         '''Emergence.'''
-        return otherIntersectionOf(pointFrom=self.pointGamma, direction=self.direction2)
+        return unitCirclePointFromAngle(angle=self.delta)
+
+    @property
+    def delta(self):
+        return self.gamma + Angle(degrees=180) - self.beta1 * 2
 
     @property
     def delta0(self):
@@ -98,4 +107,4 @@ class RaindropCalculations(object):
 
     @property
     def eta0(self):
-        return angleFromPointOnUnitCircle(self.direction3)
+        return Angle(radians=-2 * (2 * asin(self.refractiveIndexOuter / self.refractiveIndexInner * self.incidenceHeight) - asin(self.incidenceHeight)))
