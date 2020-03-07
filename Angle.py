@@ -106,3 +106,24 @@ class Angle(TypeChecker):
     def __truediv__(self, other):
         self.checkType(expectedType=NumberTypes, value=other, exceptionMessage='Angles can only be multiplied by numbers.')
         return self * (1. / other)
+
+    def __gt__(self, other):
+        return self._value > other._value
+
+    def __lt__(self, other):
+        return self._value < other._value
+
+    def __ge__(self, other):
+        return self._value >= other._value
+
+    def __le__(self, other):
+        return self._value <= other._value
+
+    def __ne__(self, other):
+        return self._value != other._value
+
+    def __eq__(self, other):
+        return self._value == other._value
+
+    def __bool__(self):
+        return self._value is not None
