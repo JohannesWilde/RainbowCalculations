@@ -39,7 +39,7 @@ class RefractiveIndexSellmeier(RefractiveIndex):
 
 
 class RefractiveIndex2007DaimonMasumura20CWater(RefractiveIndexSellmeier):
-
+    '''https://refractiveindex.info/?shelf=main&book=H2O&page=Daimon-20.0C'''
     def __init__(self):
         wavelengthRange = Range(min=Length(nanometers=180), max=Length(nanometers=1130))
         sellmeierCoefficientPairs = ((5.684027565e-1, 5.101829712e-3),
