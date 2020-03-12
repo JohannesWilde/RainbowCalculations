@@ -93,12 +93,16 @@ if __name__ == '__main__':
     refractiveIndexInner = 1.5
 
     eta0s = list()
+    powersTEheights= list()
+    powersTMheights= list()
     heights = linspace(0,1,numberOfPoints)
     for height in heights:
         raindropCalculations = RaindropCalculations(refractiveIndexInner=refractiveIndexInner,
                                                     refractiveIndexOuter=refractiveIndexOuter,
                                                     incidenceHeight=height)
         eta0s.append(raindropCalculations.eta0)
+        powersTEheights.append(raindropCalculations.transmittedPowerTransversalElectric)
+        powersTMheights.append(raindropCalculations.transmittedPowerTransversalMagnetic)
 
     # use linear interpolator to reverse this relation height -> eta0 [is not bijective!]
     heightsAuEta0sRadiansPoints = []
@@ -141,9 +145,10 @@ if __name__ == '__main__':
 
 
 
-    figure, (axis0, axis1) = plt.subplots(2,1)
+    figure, (axis0, axis1, axis2) = plt.subplots(3,1)
     axis0.cla()
     axis1.cla()
+    axis2.cla()
 
     figure.suptitle('Refractive indices inner / outer = {relation}'.format(
         height=height,
@@ -155,11 +160,17 @@ if __name__ == '__main__':
     axis0.set_xlabel('height [nu]')  # normalize unit
     axis0.set_ylabel('eta0 [radians]')
 
-    axis1.plot(eta0sRadiansForCalculation, powersTE, color=ObjectColor.PowerTE)
-    axis1.plot(eta0sRadiansForCalculation, powersTM, color=ObjectColor.PowerTM)
-    axis1.plot(eta0sRadiansForCalculation, tuple((te + tm)/2 for te, tm in zip(powersTE, powersTM)), color=ObjectColor.PowerTETMmixed)
-    axis1.set_xlabel('eta0 [radians]')
-    axis1.set_ylabel('transmitted power [nu]')  # normalize unit
+    axis1.plot(heights, powersTEheights, color=ObjectColor.PowerTE)
+    axis1.plot(heights, powersTMheights, color=ObjectColor.PowerTM)
+    axis1.plot(heights, tuple((te + tm)/2 for te, tm in zip(powersTEheights, powersTMheights)), color=ObjectColor.PowerTETMmixed)
+    axis1.set_xlabel('height [nu]')  # normalize unit
+    axis1.set_ylabel('transmitted power [nu]')
+
+    axis2.plot(eta0sRadiansForCalculation, powersTE, color=ObjectColor.PowerTE)
+    axis2.plot(eta0sRadiansForCalculation, powersTM, color=ObjectColor.PowerTM)
+    axis2.plot(eta0sRadiansForCalculation, tuple((te + tm)/2 for te, tm in zip(powersTE, powersTM)), color=ObjectColor.PowerTETMmixed)
+    axis2.set_xlabel('eta0 [radians]')
+    axis2.set_ylabel('transmitted power [nu]')  # normalize unit
 
     plt.show()
 
