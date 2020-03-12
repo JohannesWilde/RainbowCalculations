@@ -160,17 +160,19 @@ if __name__ == '__main__':
     axis0.set_xlabel('height [nu]')  # normalize unit
     axis0.set_ylabel('eta0 [radians]')
 
-    axis1.plot(heights, powersTEheights, color=ObjectColor.PowerTE)
-    axis1.plot(heights, powersTMheights, color=ObjectColor.PowerTM)
-    axis1.plot(heights, tuple((te + tm)/2 for te, tm in zip(powersTEheights, powersTMheights)), color=ObjectColor.PowerTETMmixed)
+    axis1.plot(heights, powersTEheights, color=ObjectColor.PowerTE, label='TE')
+    axis1.plot(heights, powersTMheights, color=ObjectColor.PowerTM, label='TM')
+    axis1.plot(heights, tuple((te + tm)/2 for te, tm in zip(powersTEheights, powersTMheights)), color=ObjectColor.PowerTETMmixed, label='(TE+TM)/2')
     axis1.set_xlabel('height [nu]')  # normalize unit
     axis1.set_ylabel('transmitted power [nu]')
+    legend1 = axis1.legend(loc='upper center')
 
-    axis2.plot(eta0sRadiansForCalculation, powersTE, color=ObjectColor.PowerTE)
-    axis2.plot(eta0sRadiansForCalculation, powersTM, color=ObjectColor.PowerTM)
-    axis2.plot(eta0sRadiansForCalculation, tuple((te + tm)/2 for te, tm in zip(powersTE, powersTM)), color=ObjectColor.PowerTETMmixed)
+    axis2.plot(eta0sRadiansForCalculation, powersTE, color=ObjectColor.PowerTE, label='TE')
+    axis2.plot(eta0sRadiansForCalculation, powersTM, color=ObjectColor.PowerTM, label='TM')
+    axis2.plot(eta0sRadiansForCalculation, tuple((te + tm)/2 for te, tm in zip(powersTE, powersTM)), color=ObjectColor.PowerTETMmixed, label='(TE+TM)/2')
     axis2.set_xlabel('eta0 [radians]')
     axis2.set_ylabel('transmitted power [nu]')  # normalize unit
+    legend2 = axis2.legend(loc='upper right')
 
     plt.show()
 
