@@ -108,3 +108,15 @@ class RaindropCalculations(object):
     @property
     def eta0(self):
         return Angle(radians=-2 * (2 * asin(self.refractiveIndexOuter / self.refractiveIndexInner * self.incidenceHeight) - asin(self.incidenceHeight)))
+
+    @property
+    def transmittedPowerTransversalElectric(self):
+        return self.fresnelIn.transmittanceTransversalElectric(incidenceAngle=self.beta0) * \
+               self.fresnelOut.reflectanceTransversalElectric(incidenceAngle=self.beta1) * \
+               self.fresnelOut.transmittanceTransversalElectric(incidenceAngle=self.beta1)
+
+    @property
+    def transmittedPowerTransversalMagnetic(self):
+        return self.fresnelIn.transmittanceTransversalMagnetic(incidenceAngle=self.beta0) * \
+               self.fresnelOut.reflectanceTransversalMagnetic(incidenceAngle=self.beta1) * \
+               self.fresnelOut.transmittanceTransversalMagnetic(incidenceAngle=self.beta1)
