@@ -8,6 +8,8 @@ from matplotlib import pyplot as plt
 from math import asin
 from os import mkdir, path
 from Angle import Angle
+from LinearInterpolation import StepwiseLinearFunctionInterpolator
+from Point import Point2D as Point
 from RaindropCalculations import RaindropCalculations
 from numpy import linspace
 
@@ -103,11 +105,23 @@ if __name__ == '__main__':
                                                     incidenceHeight=height)
 
         eta0s.append(raindropCalculations.eta0)
-        powerTE.append(raindropCalculations.transmittedPowerTransversalElectric)
-        powerTM.append(raindropCalculations.transmittedPowerTransversalMagnetic)
 
-        # createFigure(calculation=raindropCalculations,
-        #              directory='calculations')
+    heightsAuEta0sRadiansPoints = []
+    for heightAu, eta0 in zip(heights, eta0s):
+        heightsAuEta0sRadiansPoints.append(Point(x=heightAu, y=eta0.degrees))
+
+    linearInterpolatorHeightsAuEta0sRadians = StepwiseLinearFunctionInterpolator(listOfPoints=heightsAuEta0sRadiansPoints)
+    bla = []
+    blub = []
+    for h in linspace(0,1,301):
+        bla.append(h)
+        blub.append(linearInterpolatorHeightsAuEta0sRadians.at(x=h))
+
+        # powerTE.append(raindropCalculations.transmittedPowerTransversalElectric)
+        # powerTM.append(raindropCalculations.transmittedPowerTransversalMagnetic)
+        #
+        # # createFigure(calculation=raindropCalculations,
+        # #              directory='calculations')
 
 
 
@@ -122,15 +136,16 @@ if __name__ == '__main__':
 
     eta0sDegrees = tuple(eta0.degrees for eta0 in eta0s)
     axis0.plot(heights, eta0sDegrees, color=ObjectColor.Lightray)
+    axis0.plot(bla, blub, 'o')
     # axis0.set_xlabel('height')
     axis0.set_ylabel('eta0')
 
-    axis1.plot(heights, powerTE, color=(.5,0,0))
-    axis1.plot(heights, powerTM, color=(0,.5,0))
-    axis1.plot(heights, tuple((te + tm)/2 for te, tm in zip(powerTE, powerTM)))
-    axis1.set_xlabel('height')
-    axis1.set_ylabel('transmitted power')
-    
+    # axis1.plot(heights, powerTE, color=(.5,0,0))
+    # axis1.plot(heights, powerTM, color=(0,.5,0))
+    # axis1.plot(heights, tuple((te + tm)/2 for te, tm in zip(powerTE, powerTM)))
+    # axis1.set_xlabel('height')
+    # axis1.set_ylabel('transmitted power')
+
     plt.show()
 
     exit(0)
