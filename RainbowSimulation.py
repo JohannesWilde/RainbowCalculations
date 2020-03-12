@@ -95,7 +95,7 @@ if __name__ == '__main__':
     eta0s = list()
     powersTEheights= list()
     powersTMheights= list()
-    heights = linspace(0,1,numberOfPoints)
+    heights = linspace(-1,1,numberOfPoints)
     for height in heights:
         raindropCalculations = RaindropCalculations(refractiveIndexInner=refractiveIndexInner,
                                                     refractiveIndexOuter=refractiveIndexOuter,
@@ -125,7 +125,7 @@ if __name__ == '__main__':
         while True:
             index += 1
             correspondingHeight = linearInterpolatorHeightsAuEta0sRadians.where(y=eta0Radians, index=index)
-            if correspondingHeight is not None and (0 <= correspondingHeight <= 1.):
+            if correspondingHeight is not None and (-1. <= correspondingHeight <= 1.):
                 correspondingHeights.append(correspondingHeight)
             else:
                 break
