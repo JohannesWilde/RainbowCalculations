@@ -23,6 +23,9 @@ class ObjectZorder(object):
 class ObjectColor(object):
     MeetingPoints = (0.,.8,0.)
     Lightray = (.8,0.,0.)
+    PowerTE = (0,.5,0)
+    PowerTM = (.5,0,0)
+    PowerTETMmixed = (0,0,.5)
 
 def createFigure(calculation,
                  directory):
@@ -84,67 +87,79 @@ def createFigure(calculation,
 
 if __name__ == '__main__':
     wavelengthNm = 600
-    numberOfPoints = 101
-
+    numberOfPoints = 1001
 
     refractiveIndexOuter = 1.
     refractiveIndexInner = 1.5
 
-    # subdirectory = 'calculations/{wavelengthNm:04F}'.format(wavelengthNm=123.234)
-    # if not path.exists(subdirectory):
-    #     mkdir(subdirectory)
-
     eta0s = list()
-    powerTE = list()
-    powerTM = list()
     heights = linspace(0,1,numberOfPoints)
     for height in heights:
-
         raindropCalculations = RaindropCalculations(refractiveIndexInner=refractiveIndexInner,
                                                     refractiveIndexOuter=refractiveIndexOuter,
                                                     incidenceHeight=height)
-
         eta0s.append(raindropCalculations.eta0)
 
+    # use linear interpolator to reverse this relation height -> eta0 [is not bijective!]
     heightsAuEta0sRadiansPoints = []
     for heightAu, eta0 in zip(heights, eta0s):
-        heightsAuEta0sRadiansPoints.append(Point(x=heightAu, y=eta0.degrees))
+        heightsAuEta0sRadiansPoints.append(Point(x=heightAu, y=eta0.radians))
 
     linearInterpolatorHeightsAuEta0sRadians = StepwiseLinearFunctionInterpolator(listOfPoints=heightsAuEta0sRadiansPoints)
-    bla = []
-    blub = []
-    for h in linspace(0,1,301):
-        bla.append(h)
-        blub.append(linearInterpolatorHeightsAuEta0sRadians.at(x=h))
 
-        # powerTE.append(raindropCalculations.transmittedPowerTransversalElectric)
-        # powerTM.append(raindropCalculations.transmittedPowerTransversalMagnetic)
-        #
-        # # createFigure(calculation=raindropCalculations,
-        # #              directory='calculations')
+    # determine output angles as new dependend parameter
+    eta0Min = min(eta0s)
+    eta0Max = max(eta0s)
+    eta0sRadiansForCalculation = linspace(eta0Min.radians, eta0Max.radians, numberOfPoints)
+
+    powersTE = list()
+    powersTM = list()
+    for eta0Radians in eta0sRadiansForCalculation:
+        # determine all input heights corresponding to the eta0Radians
+        correspondingHeights = list()
+        index = -1
+        while True:
+            index += 1
+            correspondingHeight = linearInterpolatorHeightsAuEta0sRadians.where(y=eta0Radians, index=index)
+            if correspondingHeight is not None and (0 <= correspondingHeight <= 1.):
+                correspondingHeights.append(correspondingHeight)
+            else:
+                break
+
+        # now add up all power from potentially different input heights
+        powerTE = 0.
+        powerTM = 0.
+        for correspondingHeight in correspondingHeights:
+            raindropCalculations = RaindropCalculations(refractiveIndexInner=refractiveIndexInner,
+                                                        refractiveIndexOuter=refractiveIndexOuter,
+                                                        incidenceHeight=correspondingHeight)
+            powerTE += raindropCalculations.transmittedPowerTransversalElectric
+            powerTM += raindropCalculations.transmittedPowerTransversalMagnetic
+
+        powersTE.append(powerTE)
+        powersTM.append(powerTM)
 
 
 
-    figure, (axis0, axis1) = plt.subplots(2,1, sharex=True)
+    figure, (axis0, axis1) = plt.subplots(2,1)
     axis0.cla()
     axis1.cla()
 
-    figure.suptitle('Incident height = {height}, refractive indices inner / outer = {relation}'.format(
+    figure.suptitle('Refractive indices inner / outer = {relation}'.format(
         height=height,
         relation=refractiveIndexInner / refractiveIndexOuter
     ))
 
-    eta0sDegrees = tuple(eta0.degrees for eta0 in eta0s)
-    axis0.plot(heights, eta0sDegrees, color=ObjectColor.Lightray)
-    axis0.plot(bla, blub, 'o')
-    # axis0.set_xlabel('height')
-    axis0.set_ylabel('eta0')
+    eta0sRadians = tuple(eta0.radians for eta0 in eta0s)
+    axis0.plot(heights, eta0sRadians, color=ObjectColor.Lightray)
+    axis0.set_xlabel('height [nu]')  # normalize unit
+    axis0.set_ylabel('eta0 [radians]')
 
-    # axis1.plot(heights, powerTE, color=(.5,0,0))
-    # axis1.plot(heights, powerTM, color=(0,.5,0))
-    # axis1.plot(heights, tuple((te + tm)/2 for te, tm in zip(powerTE, powerTM)))
-    # axis1.set_xlabel('height')
-    # axis1.set_ylabel('transmitted power')
+    axis1.plot(eta0sRadiansForCalculation, powersTE, color=ObjectColor.PowerTE)
+    axis1.plot(eta0sRadiansForCalculation, powersTM, color=ObjectColor.PowerTM)
+    axis1.plot(eta0sRadiansForCalculation, tuple((te + tm)/2 for te, tm in zip(powersTE, powersTM)), color=ObjectColor.PowerTETMmixed)
+    axis1.set_xlabel('eta0 [radians]')
+    axis1.set_ylabel('transmitted power [nu]')  # normalize unit
 
     plt.show()
 
