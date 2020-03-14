@@ -140,6 +140,10 @@ if __name__ == '__main__':
             powerTE += raindropCalculations.transmittedPowerTransversalElectric
             powerTM += raindropCalculations.transmittedPowerTransversalMagnetic
 
+        # also take into account the reflections on the outside of the raindrop
+        powerTE += raindropCalculations.fresnelIn.reflectanceTransversalElectric(incidenceAngle=Angle(radians=asin(eta0Radians/2.)))
+        powerTM += raindropCalculations.fresnelIn.reflectanceTransversalMagnetic(incidenceAngle=Angle(radians=asin(eta0Radians/2.)))
+
         powersTE.append(powerTE)
         powersTM.append(powerTM)
 
