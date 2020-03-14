@@ -90,7 +90,7 @@ if __name__ == '__main__':
     numberOfPoints = 1001
 
     refractiveIndexOuter = 1.
-    refractiveIndexInner = 1.5
+    refractiveIndexInner = 1.35
 
     eta0s = list()
     powersTEheights= list()
