@@ -8,9 +8,11 @@ from matplotlib import pyplot as plt
 from math import asin
 from os import mkdir, path
 from Angle import Angle
+from Length import Length
 from LinearInterpolation import StepwiseLinearFunctionInterpolator
 from Point import Point2D as Point
 from RaindropCalculations import RaindropCalculations
+from RefractiveIndex import RefractiveIndex2007DaimonMasumura20CWater as RefractiveIndexWater
 from numpy import linspace
 
 
@@ -86,11 +88,11 @@ def createFigure(calculation,
 
 
 if __name__ == '__main__':
-    wavelengthNm = 600
+    wavelength = Length(nanometers=600)
     numberOfPoints = 1001
 
     refractiveIndexOuter = 1.
-    refractiveIndexInner = 1.35
+    refractiveIndexInner = RefractiveIndexWater().refractiveIndex(wavelength=wavelength)
 
     eta0s = list()
     powersTEheights= list()
