@@ -1,5 +1,5 @@
 
-from math import asin, cos, sin, sqrt
+from math import asin, cos, isclose, sin, sqrt
 from Angle import Angle
 
 class Medium(object):
@@ -40,7 +40,15 @@ class FresnelCoefficients(object):
             n0 = self.mediumFrom.refractiveIndex
             n1 = self.mediumTo.refractiveIndex
             alpha = incidenceAngle.radians
-            powerRatio = (sqrt(n1 ** 2 - (n0 * sin(alpha)) ** 2) / (n0 * cos(alpha))) * (abs(transmittance) ** 2)
+
+            # relative electric permittivity
+            er0 = n0 ** 2
+            er1 = n1 ** 2
+
+            tmp = er1 - er0 * (sin(alpha) ** 2)
+            if (tmp < 0) and isclose(tmp, 0, abs_tol=1e-12):
+                tmp = 0
+            powerRatio = (sqrt(tmp) / (n0 * cos(alpha))) * (abs(transmittance) ** 2)
         return powerRatio
 
     def amplitudeToPowerReflectance(self, reflectance):
@@ -65,7 +73,10 @@ class FresnelCoefficients(object):
 
             alpha = incidenceAngle.radians
 
-            transmittance = (2. * n0 * cos(alpha) / (n0 * cos(alpha) + (ur0 / ur1 * sqrt(er1 - er0 * (sin(alpha) ** 2)))))
+            tmp = er1 - er0 * (sin(alpha) ** 2)
+            if (tmp < 0) and isclose(tmp, 0, abs_tol=1e-12):
+                tmp = 0
+            transmittance = (2. * n0 * cos(alpha) / (n0 * cos(alpha) + (ur0 / ur1 * sqrt(tmp))))
         return transmittance
 
     def transmittanceTransversalElectric(self, incidenceAngle):
@@ -92,7 +103,10 @@ class FresnelCoefficients(object):
             alpha = incidenceAngle.radians
 
             a = n0 * cos(alpha)
-            b = ur0 / ur1 * sqrt(er1 - er0 * (sin(alpha) ** 2))
+            tmp = er1 - er0 * (sin(alpha) ** 2)
+            if (tmp < 0) and isclose(tmp, 0, abs_tol=1e-12):
+                tmp = 0
+            b = ur0 / ur1 * sqrt(tmp)
 
             reflectance = (a - b) / (a + b)
 
@@ -118,9 +132,12 @@ class FresnelCoefficients(object):
             ur0 = float(self.mediumFrom.magneticPermeability)
             ur1 = float(self.mediumTo.magneticPermeability)
 
-            alpha = incidenceAngle.radians#
+            alpha = incidenceAngle.radians
 
-            transmittance = (2. * n0 * n1 * cos(alpha)/ (er1 * ur0 / ur1 * cos(alpha) + n0 * sqrt(er1 - er0 * (sin(alpha) ** 2))))
+            tmp = er1 - er0 * (sin(alpha) ** 2)
+            if (tmp < 0) and isclose(tmp, 0, abs_tol=1e-12):
+                tmp = 0
+            transmittance = (2. * n0 * n1 * cos(alpha)/ (er1 * ur0 / ur1 * cos(alpha) + n0 * sqrt(tmp)))
 
         return transmittance
 
@@ -148,7 +165,11 @@ class FresnelCoefficients(object):
             alpha = incidenceAngle.radians
 
             a = er1 * ur0 / ur1 * cos(alpha)
-            b = n0 * sqrt(er1 - er0 * (sin(alpha) ** 2))
+
+            tmp = er1 - er0 * (sin(alpha) ** 2)
+            if (tmp < 0) and isclose(tmp, 0, abs_tol=1e-12):
+                tmp = 0
+            b = n0 * sqrt(tmp)
 
             reflectance = (a - b) / (a + b)
 
