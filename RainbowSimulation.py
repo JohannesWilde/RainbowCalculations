@@ -5,7 +5,7 @@
     1 internal reflection only.'''
 
 from matplotlib import pyplot as plt
-from math import asin
+from math import floor
 from os import mkdir
 from Angle import Angle
 from FresnelCoefficients import FresnelCoefficients, Medium
@@ -90,7 +90,7 @@ def createFigure(calculation,
 
 if __name__ == '__main__':
     numberOfPoints = 201
-    numberOfWavelengths = 40
+    numberOfWavelengths = 5
 
     eta0sExtrema = \
         {'geometrical': list(),
@@ -102,7 +102,7 @@ if __name__ == '__main__':
          'TeTmInExternal': list(),}
 
     # visible spectrum
-    wavelengths = (Length(nanometers=value) for value in linspace(start=380, stop=740, num=numberOfWavelengths))
+    wavelengths = tuple(Length(nanometers=value) for value in linspace(start=380, stop=740, num=numberOfWavelengths))
 
     plotDirectory = 'calculations2'
     try:
@@ -251,14 +251,28 @@ if __name__ == '__main__':
         # plt.show()
 
         # geometric local extremum of eta0 relative to incidence height
-        eta0sExtrema['geometrical'].append(max(eta0s))
-        eta0sExtrema['TEinternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTEinternal.index(max(powersTEinternal))]))
-        eta0sExtrema['TMinternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTMinternal.index(max(powersTMinternal))]))
-        eta0sExtrema['TeTmInternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTeTmInternal.index(max(powersTeTmInternal))]))
-        eta0sExtrema['TEinExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTEinExternal.index(max(powersTEinExternal))]))
-        eta0sExtrema['TMinExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTMinExternal.index(max(powersTMinExternal))]))
-        eta0sExtrema['TeTmInExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTeTmInExternal.index(max(powersTeTmInExternal))]))
+        eta0sExtrema['geometrical'].append(min(eta0s))
+        eta0sExtrema['TEinternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTEinternal.index(max(powersTEinternal[0:floor(len(powersTEinternal)/2)]))]))
+        eta0sExtrema['TMinternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTMinternal.index(max(powersTMinternal[0:floor(len(powersTMinternal)/2)]))]))
+        eta0sExtrema['TeTmInternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTeTmInternal.index(max(powersTeTmInternal[0:floor(len(powersTeTmInternal)/2)]))]))
+        eta0sExtrema['TEinExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTEinExternal.index(max(powersTEinExternal[0:floor(len(powersTEinExternal)/2)]))]))
+        eta0sExtrema['TMinExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTMinExternal.index(max(powersTMinExternal[0:floor(len(powersTMinExternal)/2)]))]))
+        eta0sExtrema['TeTmInExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTeTmInExternal.index(max(powersTeTmInExternal[0:floor(len(powersTeTmInExternal)/2)]))]))
 
-    print('Finished calculating.')
+    print('\nFinished calculating.')
+
+    plt.title('Maximum excidence angle depending on wavelength for water.')
+    plt.xlabel('wavelength [nm]')
+    plt.ylabel('eta0 [degree]')
+    wavelengthsNm = tuple(wavlength.nanometers for wavlength in wavelengths)
+    for key, value in eta0sExtrema.items():
+        plt.plot(wavelengthsNm, tuple(angle.degrees for angle in value), label=key)
+    plt.legend(loc='upper right')
+    plt.savefig(fname='{directory}/results_overall.png'.format(
+        directory=plotDirectory
+    ), dpi=300)
+    # plt.show()
+
+    print('Finished printing result.')
 
     exit(0)
