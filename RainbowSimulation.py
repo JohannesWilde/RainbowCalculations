@@ -189,10 +189,6 @@ if __name__ == '__main__':
     powersTeTmInExternal = tuple((powerTEinExternal + powerTMinExternal) / 2. for powerTEinExternal, powerTMinExternal in zip(powersTEinExternal, powersTMinExternal))
 
 
-    # geometric local extremum of eta0 relative to incidence height
-    eta0sExtrema['geometrical'].append(max(eta0s))
-
-
     # plot all relations
     figure, ((axis0, axis1), (axis2, axis3), (axis4, axis5)) = plt.subplots(3,2)
 
@@ -239,5 +235,14 @@ if __name__ == '__main__':
     legend5 = axis.legend(loc='upper right')
 
     plt.show()
+
+    # geometric local extremum of eta0 relative to incidence height
+    eta0sExtrema['geometrical'].append(max(eta0s))
+    eta0sExtrema['TEinternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTEinternal.index(max(powersTEinternal))]))
+    eta0sExtrema['TMinternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTMinternal.index(max(powersTMinternal))]))
+    eta0sExtrema['TeTmInternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTeTmInternal.index(max(powersTeTmInternal))]))
+    eta0sExtrema['TEinExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTEinExternal.index(max(powersTEinExternal))]))
+    eta0sExtrema['TMinExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTMinExternal.index(max(powersTMinExternal))]))
+    eta0sExtrema['TeTmInExternal'].append(Angle(radians=eta0sRadiansForCalculation[powersTeTmInExternal.index(max(powersTeTmInExternal))]))
 
     exit(0)
