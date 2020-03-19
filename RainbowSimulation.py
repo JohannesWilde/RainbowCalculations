@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from math import asin
 from os import mkdir, path
 from Angle import Angle
+from FresnelCoefficients import FresnelCoefficients, Medium
 from Length import Length
 from LinearInterpolation import StepwiseLinearFunctionInterpolator
 from Point import Point2D as Point
@@ -88,12 +89,27 @@ def createFigure(calculation,
 
 
 if __name__ == '__main__':
+    numberOfPoints = 201
+
+    eta0sExtrema = \
+        {'geometrical': list(),
+         'TEinternal': list(),
+         'TMinternal': list(),
+         'TeTmInternal': list(),
+         'TEinExternal': list(),
+         'TMinExternal': list(),
+         'TeTmInExternal': list(),}
+
+    # visible spectrum
+    wavelengths = (Length(nanometers=value) for value in linspace(start=380, stop=740, num=numberOfPoints))
+
+
     wavelength = Length(nanometers=600)
-    numberOfPoints = 1001
 
     refractiveIndexOuter = 1.
     refractiveIndexInner = RefractiveIndexWater().refractiveIndex(wavelength=wavelength)
 
+    # powers and eta0 dependent on incidence hieght
     eta0s = list()
     powersTEheights= list()
     powersTMheights= list()
@@ -105,21 +121,21 @@ if __name__ == '__main__':
         eta0s.append(raindropCalculations.eta0)
         powersTEheights.append(raindropCalculations.transmittedPowerTransversalElectric)
         powersTMheights.append(raindropCalculations.transmittedPowerTransversalMagnetic)
+    del raindropCalculations
 
     # use linear interpolator to reverse this relation height -> eta0 [is not bijective!]
     heightsAuEta0sRadiansPoints = []
     for heightAu, eta0 in zip(heights, eta0s):
         heightsAuEta0sRadiansPoints.append(Point(x=heightAu, y=eta0.radians))
-
     linearInterpolatorHeightsAuEta0sRadians = StepwiseLinearFunctionInterpolator(listOfPoints=heightsAuEta0sRadiansPoints)
 
-    # determine output angles as new dependend parameter
+    # determine output angles as new dependent parameter
     eta0Min = min(eta0s)
     eta0Max = max(eta0s)
     eta0sRadiansForCalculation = linspace(eta0Min.radians, eta0Max.radians, numberOfPoints)
 
-    powersTE = list()
-    powersTM = list()
+    powersTEinternal = list()
+    powersTMinternal = list()
     for eta0Radians in eta0sRadiansForCalculation:
         # determine all input heights corresponding to the eta0Radians
         correspondingHeights = list()
@@ -133,52 +149,94 @@ if __name__ == '__main__':
                 break
 
         # now add up all power from potentially different input heights
-        powerTE = 0.
-        powerTM = 0.
+        powerTEinternal = 0.
+        powerTMinternal = 0.
         for correspondingHeight in correspondingHeights:
             raindropCalculations = RaindropCalculations(refractiveIndexInner=refractiveIndexInner,
                                                         refractiveIndexOuter=refractiveIndexOuter,
                                                         incidenceHeight=correspondingHeight)
-            powerTE += raindropCalculations.transmittedPowerTransversalElectric
-            powerTM += raindropCalculations.transmittedPowerTransversalMagnetic
+            powerTEinternal += raindropCalculations.transmittedPowerTransversalElectric
+            powerTMinternal += raindropCalculations.transmittedPowerTransversalMagnetic
+            del raindropCalculations
 
-        # also take into account the reflections on the outside of the raindrop
-        powerTE += raindropCalculations.fresnelIn.reflectanceTransversalElectric(incidenceAngle=Angle(radians=asin(eta0Radians/2.)))
-        powerTM += raindropCalculations.fresnelIn.reflectanceTransversalMagnetic(incidenceAngle=Angle(radians=asin(eta0Radians/2.)))
-
-        powersTE.append(powerTE)
-        powersTM.append(powerTM)
+        powersTEinternal.append(powerTEinternal)
+        powersTMinternal.append(powerTMinternal)
+        del powerTEinternal, powerTMinternal
 
 
+    # also take into account the reflections on the outside of the raindrop
+    powersTEexternal = list()
+    powersTMexternal = list()
+    for eta0Radians in eta0sRadiansForCalculation:
+        fresnelIn = RaindropCalculations(refractiveIndexInner=refractiveIndexInner,
+                                         refractiveIndexOuter=refractiveIndexOuter,
+                                         incidenceHeight=0.).fresnelIn
+        powerTEexternal = fresnelIn.reflectanceTransversalElectric(incidenceAngle=Angle(radians=eta0Radians/2.))
+        powerTMexternal = fresnelIn.reflectanceTransversalMagnetic(incidenceAngle=Angle(radians=eta0Radians/2.))
 
-    figure, (axis0, axis1, axis2) = plt.subplots(3,1)
-    axis0.cla()
-    axis1.cla()
-    axis2.cla()
+        powersTEexternal.append(powerTEexternal)
+        powersTMexternal.append(powerTMexternal)
+        del fresnelIn
+
+
+    # superposition of internal and external once-reflected light
+    powersTEinExternal = tuple(powerTEexternal + powerTEinternal for powerTEexternal, powerTEinternal in zip(powersTEexternal, powersTEinternal))
+    powersTMinExternal = tuple(powerTMexternal + powerTMinternal for powerTMexternal, powerTMinternal in zip(powersTMexternal, powersTMinternal))
+
+    # assume even mix of TE and TM polrization [non-polarized light]
+    powersTeTmInternal = tuple((powerTEinternal + powerTMinternal) / 2. for powerTEinternal, powerTMinternal in zip(powersTEinternal, powersTMinternal))
+    powersTeTmExternal = tuple((powerTEexternal + powerTMexternal) / 2. for powerTEexternal, powerTMexternal in zip(powersTEexternal, powersTMexternal))
+    powersTeTmInExternal = tuple((powerTEinExternal + powerTMinExternal) / 2. for powerTEinExternal, powerTMinExternal in zip(powersTEinExternal, powersTMinExternal))
+
+
+    # geometric local extremum of eta0 relative to incidence height
+    eta0sExtrema['geometrical'].append(max(eta0s))
+
+
+    # plot all relations
+    figure, ((axis0, axis1), (axis2, axis3), (axis4, axis5)) = plt.subplots(3,2)
 
     figure.suptitle('Refractive indices inner / outer = {relation}'.format(
-        height=height,
         relation=refractiveIndexInner / refractiveIndexOuter
     ))
 
-    eta0sRadians = tuple(eta0.radians for eta0 in eta0s)
-    axis0.plot(heights, eta0sRadians, color=ObjectColor.Lightray)
-    axis0.set_xlabel('height [nu]')  # normalize unit
-    axis0.set_ylabel('eta0 [radians]')
+    axis = axis0
+    eta0sDegree = tuple(eta0.degrees for eta0 in eta0s)
+    axis.plot(heights, eta0sDegree, color=ObjectColor.Lightray)
+    axis.set_xlabel('height [nu]')  # normalize unit
+    axis.set_ylabel('eta0 [degrees]')
 
-    axis1.plot(heights, powersTEheights, color=ObjectColor.PowerTE, label='TE')
-    axis1.plot(heights, powersTMheights, color=ObjectColor.PowerTM, label='TM')
-    axis1.plot(heights, tuple((te + tm)/2 for te, tm in zip(powersTEheights, powersTMheights)), color=ObjectColor.PowerTETMmixed, label='(TE+TM)/2')
-    axis1.set_xlabel('height [nu]')  # normalize unit
-    axis1.set_ylabel('transmitted power [nu]')
-    legend1 = axis1.legend(loc='upper center')
+    axis = axis2
+    axis.plot(heights, powersTEheights, color=ObjectColor.PowerTE, label='TE-i')
+    axis.plot(heights, powersTMheights, color=ObjectColor.PowerTM, label='TM-i')
+    axis.plot(heights, tuple((te + tm)/2 for te, tm in zip(powersTEheights, powersTMheights)), color=ObjectColor.PowerTETMmixed, label='(TE-i+TM-i)/2')
+    axis.set_xlabel('height [nu]')  # normalize unit
+    axis.set_ylabel('transmitted power [nu]')
+    legend1 = axis.legend(loc='upper center')
 
-    axis2.plot(eta0sRadiansForCalculation, powersTE, color=ObjectColor.PowerTE, label='TE')
-    axis2.plot(eta0sRadiansForCalculation, powersTM, color=ObjectColor.PowerTM, label='TM')
-    axis2.plot(eta0sRadiansForCalculation, tuple((te + tm)/2 for te, tm in zip(powersTE, powersTM)), color=ObjectColor.PowerTETMmixed, label='(TE+TM)/2')
-    axis2.set_xlabel('eta0 [radians]')
-    axis2.set_ylabel('transmitted power [nu]')  # normalize unit
-    legend2 = axis2.legend(loc='upper right')
+    axis = axis1
+    axis.plot(eta0sRadiansForCalculation, powersTEinternal, color=ObjectColor.PowerTE, label='TE-i')
+    axis.plot(eta0sRadiansForCalculation, powersTMinternal, color=ObjectColor.PowerTM, label='TM-i')
+    axis.plot(eta0sRadiansForCalculation, powersTeTmInternal, color=ObjectColor.PowerTETMmixed, label='(TE-i+TM-i)/2')
+    axis.set_xlabel('eta0 [radians]')
+    axis.set_ylabel('transmitted power [nu]')  # normalize unit
+    legend4 = axis.legend(loc='upper right')
+
+    axis = axis3
+    axis.plot(eta0sRadiansForCalculation, powersTEexternal, color=ObjectColor.PowerTE, label='TE-e')
+    axis.plot(eta0sRadiansForCalculation, powersTMexternal, color=ObjectColor.PowerTM, label='TM-e')
+    axis.plot(eta0sRadiansForCalculation, powersTeTmExternal, color=ObjectColor.PowerTETMmixed, label='(TE-e+TM-e)/2')
+    axis.set_xlabel('eta0 [radians]')
+    axis.set_ylabel('transmitted power [nu]')  # normalize unit
+    legend5 = axis.legend(loc='upper right')
+
+    axis = axis5
+    axis.plot(eta0sRadiansForCalculation, powersTEinExternal, color=ObjectColor.PowerTE, label='TE-ie')
+    axis.plot(eta0sRadiansForCalculation, powersTMinExternal, color=ObjectColor.PowerTM, label='TM-ie')
+    axis.plot(eta0sRadiansForCalculation, powersTeTmInExternal, color=ObjectColor.PowerTETMmixed, label='(TE-ie+TM-ie)/2')
+    axis.set_xlabel('eta0 [radians]')
+    axis.set_ylabel('transmitted power [nu]')  # normalize unit
+    legend5 = axis.legend(loc='upper right')
 
     plt.show()
 
