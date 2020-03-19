@@ -6,7 +6,7 @@
 
 from matplotlib import pyplot as plt
 from math import asin
-from os import mkdir, path
+from os import mkdir
 from Angle import Angle
 from FresnelCoefficients import FresnelCoefficients, Medium
 from Length import Length
@@ -103,6 +103,12 @@ if __name__ == '__main__':
     # visible spectrum
     wavelengths = (Length(nanometers=value) for value in linspace(start=380, stop=740, num=numberOfPoints))
 
+    plotDirectory = 'calculations2'
+    try:
+        mkdir(plotDirectory)
+    except FileExistsError:
+        # directory already exists
+        pass
 
     wavelength = Length(nanometers=600)
 
@@ -234,7 +240,11 @@ if __name__ == '__main__':
     axis.set_ylabel('transmitted power [nu]')  # normalize unit
     legend5 = axis.legend(loc='upper right')
 
-    plt.show()
+    plt.savefig(fname='{directory}/results_{wavelength:.2F}.png'.format(
+        wavelength=wavelength.nanometers,
+        directory=plotDirectory
+    ))
+    # plt.show()
 
     # geometric local extremum of eta0 relative to incidence height
     eta0sExtrema['geometrical'].append(max(eta0s))
