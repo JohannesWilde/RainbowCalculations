@@ -89,8 +89,8 @@ def createFigure(calculation,
 
 
 if __name__ == '__main__':
-    numberOfPoints = 201
-    numberOfWavelengths = 5
+    numberOfPoints = 1001
+    numberOfWavelengths = 73
 
     eta0sExtrema = \
         {'geometrical': list(),
