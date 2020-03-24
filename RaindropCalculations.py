@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from math import sin, cos, tan, asin, atan
+from math import sin, cos, tan, asin, atan, sqrt
 from Angle import Angle
 from FresnelCoefficients import FresnelCoefficients, Medium
 from Rotation import Rotate2D
@@ -106,8 +106,22 @@ class RaindropCalculations(object):
         return Rotate2D(angle=(self.delta0 - self.delta1)) * self.direction2
 
     @property
-    def eta0(self):
+    def eta0Internal(self):
         return Angle(radians=-2 * (2 * asin(self.refractiveIndexOuter / self.refractiveIndexInner * self.incidenceHeight) - asin(self.incidenceHeight)))
+
+    @property
+    def deta0InternaldH(self):
+        return Angle(radians=-2 * (2 / sqrt(1 - (self.refractiveIndexOuter / self.refractiveIndexInner * self.incidenceHeight) ** 2) *
+                                   (self.refractiveIndexOuter / self.refractiveIndexInner) -
+                                   1. / sqrt( 1 - (self.incidenceHeight) ** 2)))
+
+    @property
+    def eta0External(self):
+        return self.beta0 * 2.
+
+    @property
+    def deta0ExternaldH(self):
+        return 2. / sqrt( 1 - (self.incidenceHeight) ** 2)
 
     @property
     def transmittedPowerTransversalElectric(self):
