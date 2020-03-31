@@ -134,3 +134,11 @@ class RaindropCalculations(object):
         return self.fresnelIn.transmittanceTransversalMagnetic(incidenceAngle=self.beta0) * \
                self.fresnelOut.reflectanceTransversalMagnetic(incidenceAngle=self.beta1) * \
                self.fresnelOut.transmittanceTransversalMagnetic(incidenceAngle=self.beta1)
+
+    @property
+    def reflectedPowerTransversalElectric(self):
+        return self.fresnelIn.reflectanceTransversalElectric(incidenceAngle=self.beta0)
+
+    @property
+    def reflectedPowerTransversalMagnetic(self):
+        return self.fresnelIn.reflectanceTransversalMagnetic(incidenceAngle=self.beta0)
