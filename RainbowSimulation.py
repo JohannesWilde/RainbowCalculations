@@ -294,7 +294,7 @@ if __name__ == '__main__':
 
     plt.title('Maximum excidence angle depending on wavelength for water.')
     plt.xlabel('wavelength [nm]')
-    plt.ylabel('eta0 [degree]')
+    plt.ylabel('eta0 [°]')
     wavelengthsNm = tuple(wavlength.nanometers for wavlength in wavelengths)
     for key, value in eta0sExtrema.items():
         plt.plot(wavelengthsNm, tuple(angle.degrees for angle in value), label=key)
