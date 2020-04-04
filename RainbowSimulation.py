@@ -285,20 +285,35 @@ if __name__ == '__main__':
         # plt.show()
 
         # geometric local extremum of eta0 relative to incidence height
-        eta0sExtrema['geometrical'].append(min(eta0sInitial))
-        eta0sExtrema['TEinternal'].append(Angle(radians=findMaxInFirstHalf(xs=eta0sExcidenceRadians, ys=powerExcidenceDensityEta0sInternalTE).x))
-        eta0sExtrema['TMinternal'].append(Angle(radians=findMaxInFirstHalf(xs=eta0sExcidenceRadians, ys=powerExcidenceDensityEta0sInternalTM).x))
-        eta0sExtrema['TeTmInternal'].append(Angle(radians=findMaxInFirstHalf(xs=eta0sExcidenceRadians, ys=powerExcidenceDensityEta0sInternalTETM).x))
+        eta0sExtrema['geometrical'].append(Point(x=min(eta0sInitial), y=None))
+        temp = findMaxInFirstHalf(xs=eta0sExcidenceRadians, ys=powerExcidenceDensityEta0sInternalTE)
+        eta0sExtrema['TEinternal'].append(Point(x=Angle(radians=temp.x), y=temp.y))
+        temp = findMaxInFirstHalf(xs=eta0sExcidenceRadians, ys=powerExcidenceDensityEta0sInternalTM)
+        eta0sExtrema['TMinternal'].append(Point(x=Angle(radians=temp.x), y=temp.y))
+        temp = findMaxInFirstHalf(xs=eta0sExcidenceRadians, ys=powerExcidenceDensityEta0sInternalTETM)
+        eta0sExtrema['TeTmInternal'].append(Point(x=Angle(radians=temp.x), y=temp.y))
+        del temp
 
     print('\nFinished calculating.')
 
+    fig, (plt0, plt1) = plt.subplots(1, 2)
     plt.title('Maximum excidence angle depending on wavelength for water.')
-    plt.xlabel('wavelength [nm]')
-    plt.ylabel('eta0 [°]')
+    curPlot = plt0
+    curPlot.set_xlabel('wavelength [nm]')
+    curPlot.set_ylabel('eta0 [°]')
     wavelengthsNm = tuple(wavlength.nanometers for wavlength in wavelengths)
     for key, value in eta0sExtrema.items():
-        plt.plot(wavelengthsNm, tuple(angle.degrees for angle in value), label=key)
-    plt.legend(loc='upper right')
+        curPlot.plot(wavelengthsNm, tuple(maximum.x.degrees for maximum in value), label=key)
+    curPlot.legend(loc='upper right')
+
+    curPlot = plt1
+    curPlot.set_xlabel('wavelength [nm]')
+    curPlot.set_ylabel('maximum power density [a.u.]')
+    for key, value in eta0sExtrema.items():
+        curPlot.plot(wavelengthsNm, tuple(maximum.y for maximum in value), label=key)
+    curPlot.legend(loc='upper right')
+
+
     plt.savefig(fname='{directory}/results_overall.png'.format(
         directory=plotDirectory
     ), dpi=300)
