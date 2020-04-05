@@ -1,0 +1,143 @@
+\documentclass[pagesize=pdftex,paper=a4,fontsize=12pt]{scrartcl}
+
+
+\usepackage[ngerman]{babel} % Neue Rechtschreibung, Inhaltsverzeichnis, ...
+\usepackage[utf8]{inputenc} % Umlaute
+\usepackage[T1]{fontenc} % vorgefertigte zusammengesetzte Zeichen
+\usepackage{lmodern}
+\usepackage{amsmath} % Mathematikumgebung
+\usepackage{amssymb} % Mathsymbole
+\usepackage{array} % Tabellen
+\usepackage{graphicx} % Bilder einfügen
+\usepackage[ngerman]{babel}
+\usepackage[babel, german=quotes]{csquotes}
+\usepackage{hyperref}
+\usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage{svg}
+
+\usepackage{tikz} % Grafiken
+\usetikzlibrary{arrows,decorations.pathmorphing}
+
+\title{Rainbows}
+\author{Johannes Wilde}
+
+\newcommand{\R}{\mathbb{R}}
+
+\setlength{\oddsidemargin}{-1cm}
+\setlength{\textwidth}{18cm}
+\setlength{\topmargin}{-1.5cm}
+\setlength{\textheight}{24cm}
+
+\begin{document}
+
+\maketitle
+
+\section{Geometrical Assumptions}
+
+
+
+\begin{figure}[h!]
+	\centering
+	\includesvg[width=15cm]{PrincipleSketch.svg}
+	\caption{Principle scetch of the geometrical properties of a circular raindrop.}
+	\label{fig:PrincipleScetch}
+\end{figure}
+
+
+\[ h = \sin(\alpha) \]
+
+\[ n_0 \sin(\alpha) = n_1 \sin(\beta) \]
+
+\[ \varepsilon = \alpha - \beta \]
+
+\[ \zeta = [\SI{180}{\degree} - 2 \beta] / 2 = \SI{90}{\degree} - \beta \]
+
+\[ \delta = \SI{180}{\degree} - [[\SI{180}{\degree} - 2 \beta] + \varepsilon] = 2 \beta - [\alpha - \beta] = 3 \beta - \alpha \]
+
+\[ \gamma = \SI{180}{\degree} - 2 [\zeta + \varepsilon] = \SI{180}{\degree} - 2 [\SI{90}{\degree} - \beta + \alpha - \beta] = 2 [2 \beta - \alpha] \]
+
+\begin{align}
+	\gamma (\alpha) & = 2 \left[2 \arcsin\left(\frac{n_0}{n_1} \sin(\alpha)\right) - \alpha\right] \nonumber \\[.5em]
+	\gamma (h) & = 2 \left[2 \arcsin\left(\frac{n_0}{n_1} h\right) - \arcsin(h)\right]
+\end{align}
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+	\begin{axis}[
+		scale=1.5,
+		domain=-1:1,
+		samples=500,
+		xlabel={$h\,[\text{normalized}]$},
+		ylabel={$\gamma\,[\si{\degree}]$},
+		legend pos=north west,
+		legend columns=2,
+		cycle list name=color list
+	]
+		\foreach \refractiveIndexRelation in {1.00, 1.05, 1.10, 1.15, 1.20, 1.30, 1.40, 1.60, 1.80, 2.00, 2.40, 2.80}
+		{
+			\addplot +[mark=none] (x, {2 * (2 * asin(x/\refractiveIndexRelation) - asin(x))});
+			\expandafter\addlegendentry\expandafter{\expandafter$\refractiveIndexRelation\expandafter$};
+		}
+	\end{axis}
+	\end{tikzpicture}
+	\caption{Excidence angle $\gamma$ over incidence height $h$.}
+	\label{fig:GammaOverH}
+\end{figure}
+
+
+\section{Extrema}
+
+Extrema [$\frac{d}{dx} \arcsin(x) = \frac{1}{\sqrt{1-x^2}}$]
+
+\[ \frac{d}{dh} \gamma (h) = 2 \left[2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} h]^2}} - \frac{1}{\sqrt{1-h^2}}\right] \]
+
+\newcommand{\hExtremum}{\ensuremath{h_{\text{extr.}}}}
+\newcommand{\gammaExtremum}{\ensuremath{\gamma_{\text{extr.}}}}
+\begin{align}
+	0 & \stackrel{!}{=} \frac{d}{dh} \gamma (\hExtremum)\\
+ & = 2 \left[2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} h]^2}} - \frac{1}{\sqrt{1-h^2}}\right] \nonumber \\[.5em]
+	\frac{1}{\sqrt{1-h^2}} &= 2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} \hExtremum]^2}} \nonumber \\[.5em]
+	1-\left[\frac{n_0}{n_1} \hExtremum\right]^2 &= \left[2 \frac{n_0}{n_1}\right]^2 \left[1-\hExtremum^2\right] \nonumber \\[.5em]
+	\left[\frac{n_1}{2 n_0}\right]^2 -\left[\frac{1}{2} \hExtremum\right]^2 &=  1-\hExtremum^2 \nonumber \\[.5em]
+	\frac{3}{4} \hExtremum^2 &=  1 - \left[\frac{n_1}{2 n_0}\right]^2 \nonumber \\[.5em]
+	\hExtremum^{\pm} &= \pm \sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}
+\end{align}
+
+\begin{equation}
+	 1 < \frac{n_1}{n_0} \leq 2
+\end{equation}
+
+\begin{equation}
+	\gammaExtremum^{\pm} = \gamma (\hExtremum^{\pm}) = \pm 2 \left[2 \arcsin\left(\frac{n_0}{n_1} \sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}\right) - \arcsin\left(\sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}\right)\right]
+\end{equation}
+
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}
+	\begin{axis}[
+	scale=1.5,
+	domain=1:2,
+	samples=500,
+	xlabel={$\frac{n_1}{n_0}$},
+	ylabel={$\gammaExtremum^{+}\,[\si{\degree}]$},
+	legend pos=north west,
+	legend columns=1,
+	cycle list name=color list
+	]
+		\addplot[mark=none] (x, { 2 * (2 * asin(sqrt((4-x^2)/3)/x) - asin(sqrt((4-x^2)/3))) });
+		\node[label={0:{water @ \SI{550}{\nano\meter}}},circle,fill,inner sep=2pt] at (axis cs:1.334683329053798,41.83394805963984) {};
+	\end{axis}
+	\end{tikzpicture}
+	\caption{Excidence angle $\gamma{+}$ over incidence height $h$.}
+	\label{fig:GammaMaxOverRefractiveIndexRelation}
+\end{figure}
+
+For water at \SI{20}{\degreeCelsius} and light of \SI{550}{\nano\meter} [$n_0 = 1$, $n_1 = 1.3347$] this yields an angle of $\gammaExtremum^{+} = \SI{41.83}{\degree}$
+
+
+\section{Power Density Superelevation}
+
+\end{document}
