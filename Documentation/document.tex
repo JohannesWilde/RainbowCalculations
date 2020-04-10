@@ -1,7 +1,7 @@
 \documentclass[pagesize=pdftex,paper=a4,fontsize=12pt]{scrartcl}
 
 
-\usepackage[ngerman]{babel} % Neue Rechtschreibung, Inhaltsverzeichnis, ...
+\usepackage[english]{babel} % Neue Rechtschreibung, Inhaltsverzeichnis, ...
 \usepackage[utf8]{inputenc} % Umlaute
 \usepackage[T1]{fontenc} % vorgefertigte zusammengesetzte Zeichen
 \usepackage{lmodern}
@@ -9,8 +9,6 @@
 \usepackage{amssymb} % Mathsymbole
 \usepackage{array} % Tabellen
 \usepackage{graphicx} % Bilder einfügen
-\usepackage[ngerman]{babel}
-\usepackage[babel, german=quotes]{csquotes}
 \usepackage{hyperref}
 \usepackage{pgfplots}
 \usepackage{siunitx}
@@ -37,7 +35,7 @@
 
 \section{Geometrical Assumptions}
 
-
+A raindrop is assumed to be perfectly circular, its radius normalized to $1$ and the inside and outisde described via refractive inidices $n_1$ and $n_0$.
 
 \begin{figure}[H]
 	\centering
@@ -46,23 +44,28 @@
 	\label{fig:PrincipleScetch}
 \end{figure}
 
+From this simple sketch the following relations can be deduced:
 
-\[ h = \sin(\alpha) \]
+\[ h = \sin(\alpha), \]
 
-\[ n_0 \sin(\alpha) = n_1 \sin(\beta) \]
+where Snell's law states:
 
-\[ \varepsilon = \alpha - \beta \]
+\[ n_0 \sin(\alpha) = n_1 \sin(\beta), \]
 
-\[ \zeta = [\SI{180}{\degree} - 2 \beta] / 2 = \SI{90}{\degree} - \beta \]
+\[ \varepsilon = \alpha - \beta, \]
 
-\[ \delta = \SI{180}{\degree} - [[\SI{180}{\degree} - 2 \beta] + \varepsilon] = 2 \beta - [\alpha - \beta] = 3 \beta - \alpha \]
+\[ \zeta = [\SI{180}{\degree} - 2 \beta] / 2 = \SI{90}{\degree} - \beta, \]
 
-\[ \gamma = \SI{180}{\degree} - 2 [\zeta + \varepsilon] = \SI{180}{\degree} - 2 [\SI{90}{\degree} - \beta + \alpha - \beta] = 2 [2 \beta - \alpha] \]
+\[ \delta = \SI{180}{\degree} - [[\SI{180}{\degree} - 2 \beta] + \varepsilon] = 2 \beta - [\alpha - \beta] = 3 \beta - \alpha, \]
+
+\[ \gamma = \SI{180}{\degree} - 2 [\zeta + \varepsilon] = \SI{180}{\degree} - 2 [\SI{90}{\degree} - \beta + \alpha - \beta] = 2 [2 \beta - \alpha], \]
 
 \begin{align}
-	\gamma (\alpha) & = 2 \left[2 \arcsin\left(\frac{n_0}{n_1} \sin(\alpha)\right) - \alpha\right] \nonumber \\[.5em]
-	\gamma (h) & = 2 \left[2 \arcsin\left(\frac{n_0}{n_1} h\right) - \arcsin(h)\right]
+	\gamma (\alpha) & = 2 \left[2 \arcsin\left(\frac{n_0}{n_1} \sin(\alpha)\right) - \alpha\right], \nonumber \\[.5em]
+	\gamma (h) & = 2 \left[2 \arcsin\left(\frac{n_0}{n_1} h\right) - \arcsin(h)\right].
 \end{align}
+
+These relations are shown in figure \ref{fig:GammaOverH}. Please note that the plot for $\frac{n_0}{n_1} = 1$ shall only be understood as a border-case [$\lim_{\frac{n_0}{n_1} \to 1} \gamma (h)$] - physically there would be no such effect for homogenous refractive indices.
 
 \begin{figure}[H]
 	\centering
@@ -88,31 +91,38 @@
 	\label{fig:GammaOverH}
 \end{figure}
 
+\pagebreak
 
 \section{Extrema}
 
-Extrema [$\frac{d}{dx} \arcsin(x) = \frac{1}{\sqrt{1-x^2}}$]
+The derivate is [using $\frac{d}{dx} \arcsin(x) = \frac{1}{\sqrt{1-x^2}}$]:
 
-\[ \frac{d}{dh} \gamma (h) = 2 \left[2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} h]^2}} - \frac{1}{\sqrt{1-h^2}}\right] \]
+\[ \frac{d}{dh} \gamma (h) = 2 \left[2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} h]^2}} - \frac{1}{\sqrt{1-h^2}}\right]. \]
+
+Thus the local extrema are:
 
 \newcommand{\hExtremum}{\ensuremath{h_{\text{extr.}}}}
 \newcommand{\gammaExtremum}{\ensuremath{\gamma_{\text{extr.}}}}
 \begin{align}
 	0 & \stackrel{!}{=} \frac{d}{dh} \gamma (\hExtremum)\\
- & = 2 \left[2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} \hExtremum]^2}} - \frac{1}{\sqrt{1-\hExtremum^2}}\right] \nonumber \\[.5em]
-	\frac{1}{\sqrt{1-\hExtremum^2}} &= 2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} \hExtremum]^2}} \nonumber \\[.5em]
-	1-\left[\frac{n_0}{n_1} \hExtremum\right]^2 &= \left[2 \frac{n_0}{n_1}\right]^2 \left[1-\hExtremum^2\right] \nonumber \\[.5em]
-	\left[\frac{n_1}{2 n_0}\right]^2 -\left[\frac{1}{2} \hExtremum\right]^2 &=  1-\hExtremum^2 \nonumber \\[.5em]
-	\frac{3}{4} \hExtremum^2 &=  1 - \left[\frac{n_1}{2 n_0}\right]^2 \nonumber \\[.5em]
-	\hExtremum^{\pm} &= \pm \sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}
+ & = 2 \left[2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} \hExtremum]^2}} - \frac{1}{\sqrt{1-\hExtremum^2}}\right], \nonumber \\[.5em]
+	\frac{1}{\sqrt{1-\hExtremum^2}} &= 2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} \hExtremum]^2}}, \nonumber \\[.5em]
+	1-\left[\frac{n_0}{n_1} \hExtremum\right]^2 &= \left[2 \frac{n_0}{n_1}\right]^2 \left[1-\hExtremum^2\right], \nonumber \\[.5em]
+	\left[\frac{n_1}{2 n_0}\right]^2 -\left[\frac{1}{2} \hExtremum\right]^2 &=  1-\hExtremum^2, \nonumber \\[.5em]
+	\frac{3}{4} \hExtremum^2 &=  1 - \left[\frac{n_1}{2 n_0}\right]^2, \nonumber \\[.5em]
+	\hExtremum^{\pm} &= \pm \sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}.
 \end{align}
 
-\begin{equation}
-	 1 < \frac{n_1}{n_0} \leq 2
-\end{equation}
+From this one finds:
 
 \begin{equation}
-	\gammaExtremum^{\pm} = \gamma (\hExtremum^{\pm}) = \pm 2 \left[2 \arcsin\left(\frac{n_0}{n_1} \sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}\right) - \arcsin\left(\sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}\right)\right]
+	 1 < \frac{n_1}{n_0} \leq 2.
+\end{equation}
+
+And the angle values at these local extreme are:
+
+\begin{equation}
+	\gammaExtremum^{\pm} = \gamma (\hExtremum^{\pm}) = \pm 2 \left[2 \arcsin\left(\frac{n_0}{n_1} \sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}\right) - \arcsin\left(\sqrt{\frac{1}{3} \left[4 - \left[\frac{n_1}{n_0}\right]^2\right]}\right)\right].
 \end{equation}
 
 
@@ -137,7 +147,10 @@ Extrema [$\frac{d}{dx} \arcsin(x) = \frac{1}{\sqrt{1-x^2}}$]
 	\label{fig:GammaMaxOverRefractiveIndexRelation}
 \end{figure}
 
-For water at \SI{20}{\degreeCelsius} and light of \SI{550}{\nano\meter} [$n_0 = 1$, $n_1 = 1.3347$] this yields an angle of $\gammaExtremum^{+} = \SI{41.83}{\degree}$
+For water at \SI{20}{\degreeCelsius} and light of \SI{550}{\nano\meter} [$n_0 = 1$, $n_1 = 1.3347$] this yields an angle of $\gammaExtremum^{+} = \SI{41.83}{\degree}$.
+
+
+Because of what will be shown in the next section, this also corresponds to the angles of maximum power density excidence.
 
 
 \section{Power Density Superelevation}
@@ -207,6 +220,17 @@ This can be seen in figure \ref{fig:GammaOverHExcerpt}, where the power incident
 	\label{fig:invdGammadHOverHExcerpt}
 \end{figure}
 
-Because $\gamma (h)$ exhibits a local extremum the derivative becomes $0$ and thus its inverse $\inf$ at that point. Regarding numerical calculations this is a major inconvenience. It however justifies, to only consider the geometrical relations for this investigation.
+Because $\gamma (h)$ exhibits a local extremum the derivative becomes $0$ and thus the absolute value of its inverse $\infty$ at that point. Regarding numerical calculations this is a major inconvenience. It however justifies to only consider the geometrical relations for this investigation.
+
+\vspace*{\fill}
+
+This however requires, that no other physcial effects annihilate all power transmitted at that extremum. I checked Fresnel for water and found the following:
+\begin{figure}[H]
+	\centering
+	\includegraphics[trim={0cm 4.12cm 0cm 1cm}, clip, width=12cm]{./Images/results_550.00.png}
+	\caption{Angle and transmitted power in terms of Fresnel over $h$ [$eta0 = -\gamma$].}
+	\label{fig:waterFresnell}
+\end{figure}
+
 
 \end{document}
