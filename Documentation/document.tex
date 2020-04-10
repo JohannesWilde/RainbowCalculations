@@ -15,13 +15,15 @@
 \usepackage{pgfplots}
 \usepackage{siunitx}
 \usepackage{svg}
+\usepackage{float}
 
 \usepackage{tikz} % Grafiken
-\usetikzlibrary{arrows,decorations.pathmorphing}
+\usetikzlibrary{arrows, decorations.pathmorphing, calc}
 
 \title{Rainbows}
 \author{Johannes Wilde}
 
+\newcommand{\abs}[1]{\ensuremath{\left|{#1}\right|}}
 \newcommand{\R}{\mathbb{R}}
 
 \setlength{\oddsidemargin}{-1cm}
@@ -37,7 +39,7 @@
 
 
 
-\begin{figure}[h!]
+\begin{figure}[H]
 	\centering
 	\includesvg[width=15cm]{PrincipleSketch.svg}
 	\caption{Principle scetch of the geometrical properties of a circular raindrop.}
@@ -62,7 +64,7 @@
 	\gamma (h) & = 2 \left[2 \arcsin\left(\frac{n_0}{n_1} h\right) - \arcsin(h)\right]
 \end{align}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 	\centering
 	\begin{tikzpicture}
 	\begin{axis}[
@@ -97,8 +99,8 @@ Extrema [$\frac{d}{dx} \arcsin(x) = \frac{1}{\sqrt{1-x^2}}$]
 \newcommand{\gammaExtremum}{\ensuremath{\gamma_{\text{extr.}}}}
 \begin{align}
 	0 & \stackrel{!}{=} \frac{d}{dh} \gamma (\hExtremum)\\
- & = 2 \left[2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} h]^2}} - \frac{1}{\sqrt{1-h^2}}\right] \nonumber \\[.5em]
-	\frac{1}{\sqrt{1-h^2}} &= 2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} \hExtremum]^2}} \nonumber \\[.5em]
+ & = 2 \left[2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} \hExtremum]^2}} - \frac{1}{\sqrt{1-\hExtremum^2}}\right] \nonumber \\[.5em]
+	\frac{1}{\sqrt{1-\hExtremum^2}} &= 2 \frac{n_0}{n_1} \frac{1}{\sqrt{1-[\frac{n_0}{n_1} \hExtremum]^2}} \nonumber \\[.5em]
 	1-\left[\frac{n_0}{n_1} \hExtremum\right]^2 &= \left[2 \frac{n_0}{n_1}\right]^2 \left[1-\hExtremum^2\right] \nonumber \\[.5em]
 	\left[\frac{n_1}{2 n_0}\right]^2 -\left[\frac{1}{2} \hExtremum\right]^2 &=  1-\hExtremum^2 \nonumber \\[.5em]
 	\frac{3}{4} \hExtremum^2 &=  1 - \left[\frac{n_1}{2 n_0}\right]^2 \nonumber \\[.5em]
@@ -114,7 +116,7 @@ Extrema [$\frac{d}{dx} \arcsin(x) = \frac{1}{\sqrt{1-x^2}}$]
 \end{equation}
 
 
-\begin{figure}[h!]
+\begin{figure}[H]
 	\centering
 	\begin{tikzpicture}
 	\begin{axis}[
@@ -139,5 +141,72 @@ For water at \SI{20}{\degreeCelsius} and light of \SI{550}{\nano\meter} [$n_0 = 
 
 
 \section{Power Density Superelevation}
+
+
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+	\begin{axis}[
+	scale=1.5,
+	domain=.75:.9,
+	samples=500,
+	xlabel={$h\,[\text{normalized}]$},
+	ylabel={$\gamma\,[\si{\degree}]$},
+	legend pos=north east,
+	legend columns=1,
+	cycle list name=color list
+	]
+	\addplot +[mark=none] (x, {2 * (2 * asin(x/1.3347) - asin(x))});
+	\addlegendentry{$1.3347$};
+	\addplot +[samples=11, mark=*] (x, {2 * (2 * asin(x/1.3347) - asin(x))});
+
+	\draw (axis cs: 0.765, 39.57509140415948) -- (axis cs: 0.765,40.07022730844841) -- (axis cs: 0.75,40.07022730844841);
+	\draw (axis cs: 0.78, 39.57509140415948) -- (axis cs: 0.78,40.52158477595456) -- (axis cs: 0.75,40.52158477595456);
+	\draw (axis cs: 0.7725, 39.57509140415948) node {$\Delta h_{i}$};
+	\draw (axis cs: 0.75, 40.29590604220148) node[anchor=east] {$\Delta \gamma_{i}$};
+	\draw (axis cs: 0.855, 39.57509140415948) -- (axis cs: 0.855,41.82485632231572) -- (axis cs: 0.75,41.82485632231572);
+	\draw (axis cs: 0.87, 39.57509140415948) -- (axis cs: 0.87,41.80216101831409) -- (axis cs: 0.75,41.80216101831409);
+	\draw (axis cs: 0.8625, 39.57509140415948) node {$\Delta h_{j}$};
+	\draw (axis cs: 0.75, 41.8135086703149) node[anchor=east] {$\Delta \gamma_{j}$};
+	
+	\end{axis}
+	\end{tikzpicture}
+	\caption{Excidence angle $\gamma$ over incidence height $h$.}
+	\label{fig:GammaOverHExcerpt}
+\end{figure}
+
+As the incident power density $p_h$ is written in terms of $h$ [where the total power is $P = \int_\R p_h (x) dx$] it has to be transformed when changing the underlying coordinates. This is accomplished as followes:
+
+\[ p_{\gamma} (x) = \sum_{y~|~x = \gamma(y)} p_h (y) ~ \abs{\frac{1}{\displaystyle \left.\frac{d\gamma (z)}{dz}\right|_{z=y}}} \]
+
+which ensures that $P = \int_{\R} p_{\gamma} (x) dx$.
+
+This can be seen in figure \ref{fig:GammaOverHExcerpt}, where the power incident e.g. in $\Delta h_{j}$ [$= \int_{h_j}^{h_{j+1}} p_h (x) dx$] exits in a much smaller angle region $\Delta \gamma_{j}$ compared to the power incident in $\Delta h_{i}$ --- which in return means that the power density $p_\gamma$ has to be much higher for $\gamma_j$ than for $\gamma_i$.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+	\begin{axis}[
+	scale=1.5,
+	domain=.75:.9,
+	ymax=50,
+	samples=500,
+	xlabel={$h\,[\text{normalized}]$},
+	ylabel={$\gamma\,[\si{\degree}]$},
+	legend pos=north east,
+	legend columns=1,
+	cycle list name=color list
+	]
+	\addplot +[mark=none] (x, {1 / 2 / abs(2 / 1.3347 / sqrt(1 - (x/1.3347)^2) - 1 / sqrt(1 - x^2))});
+	\addlegendentry{$1.3347$};
+		
+	\end{axis}
+	\end{tikzpicture}
+	\caption{Power density scaling $\abs{\frac{1}{\displaystyle \left.\frac{d\gamma (z)}{dz}\right|_{z=y}}}$ just because of the geometry.}
+	\label{fig:invdGammadHOverHExcerpt}
+\end{figure}
+
+Because $\gamma (h)$ exhibits a local extremum the derivative becomes $0$ and thus its inverse $\inf$ at that point. Regarding numerical calculations this is a major inconvenience. It however justifies, to only consider the geometrical relations for this investigation.
 
 \end{document}
